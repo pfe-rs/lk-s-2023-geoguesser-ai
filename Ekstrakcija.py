@@ -9,6 +9,17 @@ from skimage.feature import canny
 import skimage
 import threading
 
+states=[
+    'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut',
+    'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
+    'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan',
+    'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
+    'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio',
+    'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota',
+    'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia',
+    'Wisconsin', 'Wyoming'
+]
+
 N=256
 def prikazi(slika):
     cv2.imshow('Slika',slika)
@@ -79,9 +90,14 @@ def ekstraktuj(slika, ouf):
             sve(slika[i*64:i*64+63,j*64:j*64+63],ouf,c[i*64:i*64+63,j*64:j*64+63],l1[i*64:i*64+63,j*64:j*64+63],l2[i*64:i*64+63,j*64:j*64+63],l3[i*64:i*64+63,j*64:j*64+63],l4[i*64:i*64+63,j*64:j*64+63])
 
 
-def extr_state(state):
-    path= os.path.join('.\d50States10k',state) 
-    destination = os.path.join(".\Ekstraktovano",state)
+def extr_state(idx):
+    state=states[idx%50]
+    if idx<50:
+        path= os.path.join('..\d50States10k',state) 
+        destination = os.path.join("..\Ekstraktovano",state)
+    else:
+        path= os.path.join('..\d50States2K_test\test_data',state) 
+        destination = os.path.join("..\EkstraktovanoTest",state)
     fajlovi = os.listdir(path)
 
     for i in range(0,len(fajlovi)-1):
@@ -97,22 +113,12 @@ def extr_state(state):
         ekstraktuj(slika,ouf)
 
 start=time.time()
-states=[
-    'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut',
-    'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
-    'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan',
-    'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
-    'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio',
-    'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota',
-    'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia',
-    'Wisconsin', 'Wyoming'
-]
 threads={}
 
-for i in range(0,50):
-    threads[i] = threading.Thread(target=extr_state,args=(states[i],))
-for i in range(0,50):
+for i in range(0,100):
+    threads[i] = threading.Thread(target=extr_state,args=(i,))
+for i in range(0,100):
     threads[i].start()
-for i in range(0,50):
+for i in range(0,100):
     threads[i].join()
     #print(slika)
